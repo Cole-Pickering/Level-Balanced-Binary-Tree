@@ -88,6 +88,9 @@ private:
 
 	//distance rebalance helper function
 	void sideLevelerHelp(Node* n){
+		if(!n){
+			return;
+		}
 		if(n->left){
 		n->leftDis = n->level - n->left->level;
 		}
@@ -287,6 +290,250 @@ private:
 			return;
 		}
 		sideLevelerHelp(cur);
+	}
+
+	//Delete Helper
+	void delHelper(Node* cur){
+		if (!cur){
+			return;
+		}
+		if(!cur->left and cur->leftDis == 2 and cur->rightDis == 2){
+			cur->level -=1;
+			sideLevelerHelp(cur);
+			sideLevelerHelp(cur->parent);
+		}
+		else if (2 < cur->rightDis){
+			cur->level -=1;
+			sideLevelerHelp(cur);
+			sideLevelerHelp(cur->parent);
+			remAdjuster(cur->left);
+		}
+		else if (2 < cur->leftDis){
+			cur->level -=1;
+			sideLevelerHelp(cur);
+			sideLevelerHelp(cur->parent);
+			remAdjuster(cur->right);
+		}
+		else if((cur->right and cur->right->left and cur->right->level == cur->right->left->level) or (cur->left and cur->left->right and cur->left->level == cur->left->right->level)){
+			remAdjuster(cur);
+		}
+		delHelper(cur->parent);
+	}
+
+	void remAdjuster(Node* cur){
+		Node* oldpar = nullptr;
+		if(cur->parent){
+			oldpar = cur->parent;
+		}
+		if (cur->parent and cur->level == cur->parent->level){
+			if(cur->parent->left == cur){
+				if (((cur->leftDis ==1 and cur->rightDis==1)or (cur->leftDis ==1 and cur->rightDis==2)) and !(cur->parent->rightDis == 2 and !cur->parent->right)){
+					cur->level+=1;
+					if (cur->parent->parent){
+						if(cur->parent->parent->right == cur->parent){
+							cur->parent->parent->right = cur;
+						}
+						else{
+							cur->parent->parent->left = cur;
+						}
+						cur->parent = oldpar->parent;
+					}
+					else{
+						cur->parent = nullptr;
+						root = cur;
+					}
+					oldpar->left = cur->right;
+					if (oldpar->left){
+						oldpar->left->parent = oldpar;
+					}
+					cur->right = oldpar;
+					oldpar->parent = cur;
+					sideLevelerHelp(cur);
+					sideLevelerHelp(cur->parent);
+					sideLevelerHelp(cur->right);
+				}
+				//can't go up
+				else if(cur->leftDis==2 and cur->rightDis==2){
+					cur->level -=1;
+					sideLevelerHelp(cur);
+					sideLevelerHelp(cur->parent);
+				}
+				//can't go up or down
+				else if(cur->leftDis==2 or cur->rightDis==2){
+					cur->parent->level -=1;
+					if (cur->parent->parent){
+						if(cur->parent->parent->right == cur->parent){
+							cur->parent->parent->right = cur;
+						}
+						else{
+							cur->parent->parent->left = cur;
+						}
+						cur->parent = oldpar->parent;
+					}
+					else{
+						cur->parent = nullptr;
+						root = cur;
+					}
+					oldpar->left = cur->right;
+					if (oldpar->left){
+						oldpar->left->parent = oldpar;
+					}
+					oldpar->parent = cur;
+					cur->right = oldpar;
+
+					sideLevelerHelp(cur);
+					sideLevelerHelp(cur->parent);
+					sideLevelerHelp(cur->right);
+
+					}
+				
+
+			}
+			//parent is on left
+			else if(cur->parent->right == cur){
+				if (((cur->leftDis ==1 and cur->rightDis==1) or (cur->leftDis ==2 and cur->rightDis==1)) and !(cur->parent->leftDis == 2 and !cur->parent->left)){
+					cur->level+=1;
+					if (cur->parent->parent){
+						if(cur->parent->parent->right == cur->parent){
+							cur->parent->parent->right = cur;
+						}
+						else{
+							cur->parent->parent->left = cur;
+						}
+						cur->parent = oldpar->parent;
+					}
+					else{
+						cur->parent = nullptr;
+						root = cur;
+					}
+					oldpar->right = cur->left;
+					if (oldpar->right){
+						oldpar->right->parent = oldpar;
+					}
+					cur->left = oldpar;
+					oldpar->parent = cur;
+					sideLevelerHelp(cur);
+					sideLevelerHelp(cur->parent);
+					sideLevelerHelp(cur->left);
+				}
+				//can't go up
+				else if(cur->leftDis==2 and cur->rightDis==2){
+					cur->level -=1;
+					sideLevelerHelp(cur);
+					sideLevelerHelp(cur->parent);
+				}
+				//can't go up or down
+				else if(cur->leftDis==2 or cur->rightDis==2){
+					cur->parent->level -=1;
+					if (cur->parent->parent){
+						if(cur->parent->parent->right == cur->parent){
+							cur->parent->parent->right = cur;
+						}
+						else{
+							cur->parent->parent->left = cur;
+						}
+						cur->parent = oldpar->parent;
+					}
+					else{
+						cur->parent = nullptr;
+						root = cur;
+					}
+					oldpar->right = cur->left;
+					if (oldpar->right){
+						oldpar->right->parent = oldpar;
+					}
+					oldpar->parent = cur;
+					cur->left = oldpar;
+
+					sideLevelerHelp(cur);
+					sideLevelerHelp(cur->parent);
+					sideLevelerHelp(cur->left);
+
+					}
+			}
+				
+			delHelper(cur);
+		}
+		else if (cur->left and cur->left->right and cur->left->level == cur->left->right->level) {
+				Node* mc = cur->left->right;
+				mc->level += 2;
+				cur -> level -=1;
+
+				//reassign left pointer
+				cur->left = mc->right;
+				if (cur->left){
+					cur->left->parent = cur;
+				}
+				mc->parent->right = mc->left;
+				if (mc->left){
+					mc->left->parent = mc->parent;
+				}
+				//fix mc pointers
+				mc->left = mc->parent;
+				mc->right = cur;
+				mc->parent = oldpar;
+				//fix old par
+				if (oldpar){
+						if (oldpar->key < mc->key){
+							oldpar->right = mc;
+							mc->parent=oldpar;
+						}
+						else{
+							oldpar->left = mc;
+							mc->parent=oldpar;
+						}
+				}
+				else{
+					this->root = mc;
+				}
+				//fix left child
+				mc->left->parent = mc;
+				//fix right child
+				mc->right->parent = mc;
+				sideLevelerHelp(mc);
+				sideLevelerHelp(mc->left);
+				sideLevelerHelp(mc->right);
+			}
+			else if (cur->right and cur->right->left and cur->right->level == cur->right->left->level) {
+			Node* mc = cur->right->left;
+			mc->level += 2;
+			cur -> level -=1;
+
+			//reassign left pointer
+			cur->right = mc->left;
+			if (cur->right){
+				cur->right->parent = cur;
+			}
+			mc->parent->left = mc->right;
+			if (mc->right){
+				mc->right->parent = mc->parent;
+			}
+			//fix mc pointers
+			mc->right = mc->parent;
+			mc->left = cur;
+			mc->parent = oldpar;
+			//fix old par
+			if (oldpar){
+					if (oldpar->key < mc->key){
+						oldpar->right = mc;
+						mc->parent=oldpar;
+					}
+					else{
+						oldpar->left = mc;
+						mc->parent=oldpar;
+					}
+			}
+			else{
+				this->root = mc;
+			}
+			//fix right child
+			mc->right->parent = mc;
+			//fix left child
+			mc->left->parent = mc;
+			sideLevelerHelp(mc);
+			sideLevelerHelp(mc->left);
+			sideLevelerHelp(mc->right);
+		}
 	}
 
 	//Size counter
@@ -503,10 +750,79 @@ void LevelBalancedTree<Key, Value>::remove(const Key &k)
 	if (!temp){
 		return;
 	}
+	Node* partemp = nullptr;
+	if (temp->parent){
+		partemp = temp->parent;
+	}
 	//Node found
 	//Leaf Node
+	if (!temp->left and !temp->right){
+		if (!temp->parent){//root
+			delete temp;
+			this->root = nullptr;
+		}
+		else if(temp->parent->left == temp){
+			delete temp->parent->left;
+			temp->parent->left = nullptr;
+			sideLevelerHelp(partemp);
+		}
+		else{
+			delete temp->parent->right;
+			temp->parent->right = nullptr;
+			sideLevelerHelp(partemp);
+		}
+	}
+	else if (!temp->right){
+		if (!temp->parent){
+			delete temp;
+			this->root = nullptr;
+		}
+		else if (temp->parent->left == temp){
+			delete temp->parent->left;
+			temp->parent->left = temp->left;
+			sideLevelerHelp(partemp);
+		}
+		else{
+			delete temp->parent->right;
+			temp->parent->right = temp->left;
+			sideLevelerHelp(partemp);
+		}
+	}
+	else if (!temp->left){
+		if (!temp->parent){
+			delete temp;
+			this->root = nullptr;
+		}
+		else if (temp->parent->left == temp){
+			delete temp->parent->left;
+			temp->parent->left = temp->right;
+			sideLevelerHelp(partemp);
+		}
+		else{
+			delete temp->parent->right;
+			temp->parent->right = temp->right;
+			sideLevelerHelp(partemp);
+		}
+	}
+	else{
+		//find successor
+		Node* suc = temp->right;
+		while(suc->left){
+			suc = suc->left;
+		}
+		Node* sucdata = new Node;
+		sucdata->key = suc->key;
+		sucdata->val = suc->val;
+		partemp = suc->parent;
+		remove(suc->key);
+		sideLevelerHelp(partemp);
 
-
+		temp->key = suc->key;
+		temp->val = suc->val;
+		delete sucdata;
+	}
+	delHelper(partemp);
+	count -=1;
 }
 
 
