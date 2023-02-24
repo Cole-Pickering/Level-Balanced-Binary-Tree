@@ -24,9 +24,8 @@ LevelBalancedTree<int, std::string> tree;
 	tree.insert(15, "bar");
     tree.insert(2, "bar");
 	tree.insert(12, "foo");
-	tree.insert(20, "sna");
-    tree.insert(11, "foo");
-    tree.insert(13, "foo");
+	tree.insert(18, "sna");
+    tree.insert(20, "foo");
     tree.remove(2);
 
 /*

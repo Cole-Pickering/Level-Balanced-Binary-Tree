@@ -764,12 +764,12 @@ void LevelBalancedTree<Key, Value>::remove(const Key &k)
 		}
 		else if(temp->parent->left == temp){
 			delete temp->parent->left;
-			temp->parent->left = nullptr;
+			partemp->left = nullptr;
 			sideLevelerHelp(partemp);
 		}
 		else{
 			delete temp->parent->right;
-			temp->parent->right = nullptr;
+			partemp->right = nullptr;
 			sideLevelerHelp(partemp);
 		}
 	}
