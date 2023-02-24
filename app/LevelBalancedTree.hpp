@@ -327,7 +327,7 @@ private:
 		}
 		if (cur->parent and cur->level == cur->parent->level){
 			if(cur->parent->left == cur){
-				if (((cur->leftDis ==1 and cur->rightDis==1)or (cur->leftDis ==1 and cur->rightDis==2)) and !(cur->parent->rightDis == 2 and !cur->parent->right)){
+				if (((cur->leftDis ==1 and cur->rightDis==1)or (cur->leftDis ==1 and cur->rightDis==2)) ){
 					cur->level+=1;
 					if (cur->parent->parent){
 						if(cur->parent->parent->right == cur->parent){
@@ -391,7 +391,7 @@ private:
 			}
 			//parent is on left
 			else if(cur->parent->right == cur){
-				if (((cur->leftDis ==1 and cur->rightDis==1) or (cur->leftDis ==2 and cur->rightDis==1)) and !(cur->parent->leftDis == 2 and !cur->parent->left)){
+				if (((cur->leftDis ==1 and cur->rightDis==1) or (cur->leftDis ==2 and cur->rightDis==1)) ){
 					cur->level+=1;
 					if (cur->parent->parent){
 						if(cur->parent->parent->right == cur->parent){
@@ -734,6 +734,7 @@ template<typename Key, typename Value>
 void LevelBalancedTree<Key, Value>::remove(const Key &k)
 //Code From Zybooks Chapet 7.4
 {
+	count -=1;
 	//find node
 	Node* temp = root;
 	while (temp){
@@ -774,33 +775,39 @@ void LevelBalancedTree<Key, Value>::remove(const Key &k)
 	}
 	else if (!temp->right){
 		if (!temp->parent){
+			this->root = temp->left;
 			delete temp;
-			this->root = nullptr;
+			root->parent = nullptr;
 		}
 		else if (temp->parent->left == temp){
-			delete temp->parent->left;
 			temp->parent->left = temp->left;
+			temp->left->parent = temp->parent;
+			delete temp;
 			sideLevelerHelp(partemp);
 		}
 		else{
-			delete temp->parent->right;
 			temp->parent->right = temp->left;
+			temp->left->parent = temp->parent;
+			delete temp;
 			sideLevelerHelp(partemp);
 		}
 	}
 	else if (!temp->left){
 		if (!temp->parent){
+			this->root = temp->right;
 			delete temp;
-			this->root = nullptr;
+			root->parent = nullptr;
 		}
 		else if (temp->parent->left == temp){
-			delete temp->parent->left;
 			temp->parent->left = temp->right;
+			temp->right->parent = temp->parent;
+			delete temp;
 			sideLevelerHelp(partemp);
 		}
 		else{
-			delete temp->parent->right;
 			temp->parent->right = temp->right;
+			temp->right->parent = temp->parent;
+			delete temp;
 			sideLevelerHelp(partemp);
 		}
 	}
@@ -822,7 +829,6 @@ void LevelBalancedTree<Key, Value>::remove(const Key &k)
 		delete sucdata;
 	}
 	delHelper(partemp);
-	count -=1;
 }
 
 
