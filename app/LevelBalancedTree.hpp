@@ -820,12 +820,12 @@ void LevelBalancedTree<Key, Value>::remove(const Key &k)
 		Node* sucdata = new Node;
 		sucdata->key = suc->key;
 		sucdata->val = suc->val;
-		partemp = suc->parent;
+		Node* part = suc->parent;
 		remove(suc->key);
-		sideLevelerHelp(partemp);
+		sideLevelerHelp(part);
 
-		temp->key = suc->key;
-		temp->val = suc->val;
+		temp->key = sucdata->key;
+		temp->val = sucdata->val;
 		delete sucdata;
 	}
 	delHelper(partemp);

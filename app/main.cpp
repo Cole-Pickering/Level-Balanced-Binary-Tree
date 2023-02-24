@@ -19,14 +19,17 @@ LevelBalancedTree<int, std::string> tree;
     tree.remove(87);
 */
 
-    tree.insert(10, "foo");
-	tree.insert(5, "sna");
-	tree.insert(15, "bar");
-    tree.insert(2, "bar");
-	tree.insert(12, "foo");
-	tree.insert(18, "sna");
-    tree.insert(20, "foo");
-    tree.remove(2);
+   tree.insert(44, "foo");
+	tree.insert(78, "sna");
+	tree.insert(17, "bar");
+    tree.insert(32, "bar");
+	tree.insert(50, "foo");
+	tree.insert(87, "sna");
+    tree.insert(48, "foo");
+	tree.insert(62, "sna");
+	tree.remove(48);
+	tree.remove(62);
+	tree.remove(78);
 
 /*
 	tree.insert(1, "foo");
